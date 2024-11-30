@@ -1,19 +1,35 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"database/sql"
+
+	"github.com/gin-gonic/gin"
+	ApiRoutes "github.com/mangadi3859/goserver/api"
+	db "github.com/mangadi3859/goserver/tools"
 )
 
-func homePage(writer http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(writer, "Hello World")
-}
+var DB *sql.DB
 
 func main() {
-	http.HandleFunc("/", homePage)
-	err := http.ListenAndServe("", nil)
+    DB = db.DbConnect();
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	reloader := gin.Default()
+    api := reloader.Group("/api")
+    api.GET("/", func(c *gin.Context) {
+        c.JSON(200, gin.H{
+            "message": "welcome to api",
+        })
+    })
+
+    api.GET("/ping", func(c *gin.Context) {
+        c.JSON(200, gin.H{
+            "message": "pong",
+        })
+    })
+
+    //Routes
+    ApiRoutes.LoginRoutes(api)
+    
+    reloader.Run(":8080")
+    defer DB.Close()
 }
