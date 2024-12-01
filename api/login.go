@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
 func LoginRoutes(route *gin.RouterGroup) {
 	route.GET("/login", login())
 }

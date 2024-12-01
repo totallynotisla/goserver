@@ -1,17 +1,18 @@
 package main
 
 import (
-	"database/sql"
-
 	"github.com/gin-gonic/gin"
-	ApiRoutes "github.com/mangadi3859/goserver/api"
-	db "github.com/mangadi3859/goserver/tools"
+	ApiRoutes "github.com/totallynotisla/goserver/api"
+	db "github.com/totallynotisla/goserver/tools"
 )
 
-var DB *sql.DB
-
 func main() {
-    DB = db.DbConnect();
+    db.Con = db.DbConnect()
+    err := db.InitDB(db.Con)
+
+    if err != nil {
+        panic(err.Error())
+    }
 
 	reloader := gin.Default()
     api := reloader.Group("/api")
@@ -31,5 +32,5 @@ func main() {
     ApiRoutes.LoginRoutes(api)
     
     reloader.Run(":8080")
-    defer DB.Close()
+    defer db.Con.Close()
 }

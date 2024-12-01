@@ -1,14 +1,18 @@
 package db
 
 import (
-	"database/sql"
+	"os"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
-func DbConnect() *sql.DB {
+var Con *sqlx.DB
+
+func DbConnect() *sqlx.DB {
 	//Connect to mysql server
-	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test")
+	connStr := "user=postgres password=kmzwa8awaa dbname=gerawana sslmode=disable"
+	db, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -16,4 +20,16 @@ func DbConnect() *sql.DB {
 	return db;
 }
 
-
+func InitDB(con *sqlx.DB) (error) {
+	schema, err := os.ReadFile("database/schema.sql")
+	if err != nil {
+		return err
+	}
+	
+	_, err = con.Exec(string(schema))
+	if err != nil {
+		return err
+	}
+	
+	return nil
+}
