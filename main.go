@@ -7,30 +7,30 @@ import (
 )
 
 func main() {
-    db.Con = db.DbConnect()
-    err := db.InitDB(db.Con)
+	db.Con = db.DbConnect()
+	err := db.InitDB(db.Con)
 
-    if err != nil {
-        panic(err.Error())
-    }
+	if err != nil {
+		panic(err.Error())
+	}
 
 	reloader := gin.Default()
-    api := reloader.Group("/api")
-    api.GET("/", func(c *gin.Context) {
-        c.JSON(200, gin.H{
-            "message": "welcome to api",
-        })
-    })
+	api := reloader.Group("/api")
+	api.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "welcome to api",
+		})
+	})
 
-    api.GET("/ping", func(c *gin.Context) {
-        c.JSON(200, gin.H{
-            "message": "pong",
-        })
-    })
+	api.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 
-    //Routes
-    ApiRoutes.LoginRoutes(api)
-    
-    reloader.Run(":8080")
-    defer db.Con.Close()
+	//Routes
+	ApiRoutes.LoginRoutes(api)
+
+	reloader.Run(":8080")
+	defer db.Con.Close()
 }
