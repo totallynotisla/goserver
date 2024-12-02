@@ -40,12 +40,12 @@ type Visit struct {
 }
 
 type RegisterData struct {
-	Username string
-	Password string
-	Email    string
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
 }
 
 type LoginData struct {
-	Username string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
