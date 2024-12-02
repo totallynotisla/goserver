@@ -53,7 +53,6 @@ func Login(data LoginData, c *gin.Context) (User, Session, error) {
 }
 
 func IsAuthenticated(c *gin.Context) bool {
-	//TODO: Implement this
 	token, err := c.Cookie(COOKIE_KEY)
 	if err != nil {
 		return false
