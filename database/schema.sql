@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS shortlink (
   createdAt TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS "user" (
+CREATE TABLE IF NOT EXISTS users (
   id VARCHAR(191) PRIMARY KEY,
   email VARCHAR(191) NOT NULL,
   password VARCHAR(191) NOT NULL,
@@ -37,22 +37,82 @@ CREATE TABLE IF NOT EXISTS visit (
 );
 
 -- Add constraints after table declarations
-ALTER TABLE resetpassword
-  ADD CONSTRAINT ResetPassword_userId_key UNIQUE (userId),
-  ADD CONSTRAINT ResetPassword_otp_key UNIQUE (otp),
-  ADD CONSTRAINT ResetPassword_userId_fkey FOREIGN KEY (userId) REFERENCES "user" (id) ON UPDATE CASCADE;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'resetpassword_userid_key') THEN
+    ALTER TABLE resetpassword
+      ADD CONSTRAINT ResetPassword_userId_key UNIQUE (userId);
+  END IF;
+END $$;
 
-ALTER TABLE session
-  ADD CONSTRAINT Session_userId_fkey FOREIGN KEY (userId) REFERENCES "user" (id) ON UPDATE CASCADE;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'resetpassword_otp_key') THEN
+    ALTER TABLE resetpassword
+      ADD CONSTRAINT ResetPassword_otp_key UNIQUE (otp);
+  END IF;
+END $$;
 
-ALTER TABLE shortlink
-  ADD CONSTRAINT ShortLink_authorId_redirect_key UNIQUE (authorId, redirect),
-  ADD CONSTRAINT ShortLink_link_key UNIQUE (link),
-  ADD CONSTRAINT ShortLink_authorId_fkey FOREIGN KEY (authorId) REFERENCES "user" (id) ON UPDATE CASCADE;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'resetpassword_userid_fkey') THEN
+    ALTER TABLE resetpassword
+      ADD CONSTRAINT ResetPassword_userId_fkey FOREIGN KEY (userId) REFERENCES users (id) ON UPDATE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE "user"
-  ADD CONSTRAINT User_username_key UNIQUE (username),
-  ADD CONSTRAINT User_email_key UNIQUE (email);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'session_userid_fkey') THEN
+    ALTER TABLE session
+      ADD CONSTRAINT Session_userId_fkey FOREIGN KEY (userId) REFERENCES users (id) ON UPDATE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE visit
-  ADD CONSTRAINT Visit_shortLinkId_fkey FOREIGN KEY (shortLinkId) REFERENCES shortlink (id) ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'shortlink_authorid_redirect_key') THEN
+    ALTER TABLE shortlink
+      ADD CONSTRAINT ShortLink_authorId_redirect_key UNIQUE (authorId, redirect);
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'shortlink_link_key') THEN
+    ALTER TABLE shortlink
+      ADD CONSTRAINT ShortLink_link_key UNIQUE (link);
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'shortlink_authorid_fkey') THEN
+    ALTER TABLE shortlink
+      ADD CONSTRAINT ShortLink_authorId_fkey FOREIGN KEY (authorId) REFERENCES users (id) ON UPDATE CASCADE;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'user_username_key') THEN
+    ALTER TABLE users
+      ADD CONSTRAINT User_username_key UNIQUE (username);
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'user_email_key') THEN
+    ALTER TABLE users
+      ADD CONSTRAINT User_email_key UNIQUE (email);
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'visit_shortlinkid_fkey') THEN
+    ALTER TABLE visit
+      ADD CONSTRAINT Visit_shortLinkId_fkey FOREIGN KEY (shortLinkId) REFERENCES shortlink (id) ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;

@@ -29,7 +29,7 @@ func main() {
 	})
 
 	//Routes
-	ApiRoutes.LoginRoutes(api)
+	ApiRoutes.Handler(api)
 
 	reloader.Run(":8080")
 	defer db.Con.Close()
