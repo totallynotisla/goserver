@@ -9,11 +9,14 @@ import (
 )
 
 var Con *sqlx.DB
-var db_password string = "root"
 
 func DbConnect() *sqlx.DB {
 	//Connect to mysql server
-	connStr := fmt.Sprintf("user=postgres password=%s dbname=gerawana sslmode=disable", db_password)
+	dbPassword := GetEnv("DB_PASS")
+	dbName := GetEnv("DB_NAME")
+	dbUser := GetEnv("DB_USER")
+
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", dbUser, dbPassword, dbName)
 	db, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
 		panic(err.Error())

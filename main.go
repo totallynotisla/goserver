@@ -2,13 +2,19 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	ApiRoutes "github.com/totallynotisla/goserver/api"
 	db "github.com/totallynotisla/goserver/tools"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(err.Error())
+	}
+
 	db.Con = db.DbConnect()
-	err := db.InitDB(db.Con)
+	err = db.InitDB(db.Con)
 
 	if err != nil {
 		panic(err.Error())
