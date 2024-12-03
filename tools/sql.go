@@ -15,8 +15,9 @@ func DbConnect() *sqlx.DB {
 	dbPassword := GetEnv("DB_PASS")
 	dbName := GetEnv("DB_NAME")
 	dbUser := GetEnv("DB_USER")
+	dbPort := GetEnv("DB_PORT")
 
-	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", dbUser, dbPassword, dbName)
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s port=%s sslmode=disable", dbUser, dbPassword, dbName, dbPort)
 	db, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
 		panic(err.Error())
