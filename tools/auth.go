@@ -95,7 +95,11 @@ func createSession(user User, c *gin.Context) (Session, error) {
 		return Session{}, err
 	}
 
-	userJwt, err := createJwt(user)
+	userJwt, _ := createJwt(UserResponse{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+	})
 	c.SetCookie(COOKIE_USER, userJwt, int(COOKIE_EXPIRE), "/", "", false, true)
 	c.SetCookie(COOKIE_KEY, token, int(COOKIE_EXPIRE), "/", "", false, true)
 
@@ -104,7 +108,7 @@ func createSession(user User, c *gin.Context) (Session, error) {
 
 type jwtWithClaims[T any] struct {
 	jwt.RegisteredClaims
-	Claims T
+	Data T `json:"data"`
 }
 
 func createJwt[T any](data T) (string, error) {
@@ -113,7 +117,7 @@ func createJwt[T any](data T) (string, error) {
 			Issuer:    "gerawana",
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(COOKIE_EXPIRE)),
 		},
-		Claims: data,
+		Data: data,
 	}
 
 	token := jwt.NewWithClaims(JWT_METHOD, claims)
@@ -141,7 +145,7 @@ func readJwt[T any](tokenString string) (T, error) {
 		return _zero, err
 	}
 
-	return token.Claims.(jwtWithClaims[T]).Claims, nil
+	return token.Claims.(jwtWithClaims[T]).Data, nil
 }
 
 func checkSession(token string) bool {

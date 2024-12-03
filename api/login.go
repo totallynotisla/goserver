@@ -52,8 +52,16 @@ func login() gin.HandlerFunc {
 			"message": "Success",
 			"status":  "OK",
 			"data": gin.H{
-				"user":    userDb,
-				"session": session,
+				"user": tools.UserResponse{
+					ID:       userDb.ID,
+					Username: userDb.Username,
+					Email:    userDb.Email,
+				},
+				"session": tools.SessionResponse{
+					Token:     session.Token,
+					ExpiresAt: session.ExpiresAt,
+					UserID:    session.UserID,
+				},
 			},
 		})
 	}
